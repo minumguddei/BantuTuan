@@ -1,0 +1,35 @@
+name: Dzikir Digital
+
+on:
+  schedule:
+    - cron: '30 22 * * *' # Contoh: Berjalan setiap jam 5:30 pagi WIB
+  workflow_dispatch:
+
+jobs:
+  run-dzikir:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install Library
+        run: pip install requests
+
+      - name: Eksekusi Dzikir
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }} # Ambil dari Secrets
+        run: python main.py
+
+      - name: Auto Commit
+        run: |
+          git config --global user.name "DigitalDzikir"
+          git config --global user.email "bot@github.com"
+          git add .
+          git commit -m "Update"
+          git push
+        
